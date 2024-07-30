@@ -2,12 +2,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class DigitalClock extends JFrame {
     private JLabel timeLabel;
     private JLabel dateLabel;
-    private JComboBox<String> fontComboBox;
-    private JComboBox<String> colorComboBox;
+    private JComboBox<String> timeZoneComboBox;
 
     public DigitalClock() {
         setTitle("Digital Clock");
@@ -23,16 +23,9 @@ public class DigitalClock extends JFrame {
         dateLabel.setFont(new Font("Arial", Font.PLAIN, 20));
         add(dateLabel, BorderLayout.SOUTH);
 
-        JPanel controlPanel = new JPanel();
-        fontComboBox = new JComboBox<>(new String[] { "Arial", "Courier", "Times New Roman" });
-        fontComboBox.addActionListener(e -> updateFont());
-        controlPanel.add(fontComboBox);
-
-        colorComboBox = new JComboBox<>(new String[] { "Black", "Red", "Blue" });
-        colorComboBox.addActionListener(e -> updateColor());
-        controlPanel.add(colorComboBox);
-
-        add(controlPanel, BorderLayout.NORTH);
+        timeZoneComboBox = new JComboBox<>(TimeZone.getAvailableIDs());
+        timeZoneComboBox.addActionListener(e -> updateTime());
+        add(timeZoneComboBox, BorderLayout.NORTH);
 
         Timer timer = new Timer(1000, e -> updateTime());
         timer.start();
@@ -43,33 +36,11 @@ public class DigitalClock extends JFrame {
     private void updateTime() {
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        timeFormat.setTimeZone(TimeZone.getTimeZone((String) timeZoneComboBox.getSelectedItem()));
+        dateFormat.setTimeZone(TimeZone.getTimeZone((String) timeZoneComboBox.getSelectedItem()));
         Date now = new Date();
         timeLabel.setText(timeFormat.format(now));
         dateLabel.setText(dateFormat.format(now));
-    }
-
-    private void updateFont() {
-        String selectedFont = (String) fontComboBox.getSelectedItem();
-        timeLabel.setFont(new Font(selectedFont, Font.BOLD, 30));
-        dateLabel.setFont(new Font(selectedFont, Font.PLAIN, 20));
-    }
-
-    private void updateColor() {
-        String selectedColor = (String) colorComboBox.getSelectedItem();
-        switch (selectedColor) {
-            case "Black":
-                timeLabel.setForeground(Color.BLACK);
-                dateLabel.setForeground(Color.BLACK);
-                break;
-            case "Red":
-                timeLabel.setForeground(Color.RED);
-                dateLabel.setForeground(Color.RED);
-                break;
-            case "Blue":
-                timeLabel.setForeground(Color.BLUE);
-                dateLabel.setForeground(Color.BLUE);
-                break;
-        }
     }
 
     public static void main(String[] args) {
